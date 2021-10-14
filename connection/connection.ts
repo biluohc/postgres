@@ -220,7 +220,11 @@ export class Connection {
   }
 
   async #createNonTlsConnection(options: Deno.ConnectOptions) {
-    this.#conn = await Deno.connect(options);
+    this.#conn = ["127.0.0.1", "0.0.0.0", "localhost", undefined].includes(
+        options.hostname,
+      )
+      ? await Deno.connect(options)
+      : await Deno.connectTls(options);
     this.#bufWriter = new BufWriter(this.#conn);
     this.#bufReader = new BufReader(this.#conn);
   }
